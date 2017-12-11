@@ -2,12 +2,8 @@
 #include <stdlib.h> 
 #include <time.h>
 #include <math.h>
-//#include <omp.h>
-double rand2()
-{
-    return (double)rand() / (double)RAND_MAX ;
-} 
-// A utility function to swap two elements
+#include <omp.h>
+//swap two elements
 void swap(int* a, int* b)
 {
     int t = *a;
@@ -15,16 +11,12 @@ void swap(int* a, int* b)
     *b = t;
 }
  
-/* This function takes last element as pivot, places
-   the pivot element at its correct position in sorted
-    array, and places all smaller (smaller than pivot)
-   to left of pivot and all greater elements to right
-   of pivot */
+//  all smaller to left of pivot
+//  all greater elements to right of pivot
 int partition (int arr[], int low, int high)
 {
     int pivot = arr[high];    // pivot
     int i = (low - 1);  // Index of smaller element
- 
     for (int j = low; j <= high- 1; j++)
     {
         // If current element is smaller than or
@@ -39,10 +31,7 @@ int partition (int arr[], int low, int high)
     return (i + 1);
 }
  
-/* The main function that implements QuickSort
- arr[] --> Array to be sorted,
-  low  --> Starting index,
-  high  --> Ending index */
+// The main function that implements QuickSort
 void quickSort(int arr[], int low, int high)
 {
     if (low < high)
@@ -58,6 +47,29 @@ void quickSort(int arr[], int low, int high)
     }
 }
  
+
+void quickSort1(int arr[], int low, int high)
+{
+    if (low < high){
+        /* pi is partitioning index, arr[p] is now
+           at right place */
+        int pi = partition(arr, low, high);
+        // Separately sort elements
+        #pragma omp parallel sections 
+        {
+        	#pragma omp section 
+        	{
+        		quickSort(arr, low, pi - 1);
+        	}
+        	#pragma omp section
+            {
+        		quickSort(arr, pi + 1, high);
+        	}
+    	}
+    }
+}
+
+
 /* Function to print an array */
 void printArray(int arr[], int size)
 {
@@ -66,7 +78,6 @@ void printArray(int arr[], int size)
         printf("%d ", arr[i]);
     printf("n");
 }
-
 
 int main(int argc, char *argv[]){
 	if(argc<=0) {
@@ -78,17 +89,24 @@ int main(int argc, char *argv[]){
     FILE * file;
 	file = fopen(argv[1] , "r");
 	int num;
+	double begin,end;
 	if (file) {
 		fscanf(file,"%d",&num);
 		int data[num];
 		for (int i=0; i<num; ++i){
 			fscanf(file,"%d",&data[i]);
 		}
-		printArray(data,num);
+
+
+		//printArray(data,num);
+		begin = omp_get_wtime();
 		quickSort(data,0,num-1);
-		printf("\n");
-		printArray(data,num);
+		end = omp_get_wtime();
+		double time_spent = (double)(end - begin);
+		printf("\n%f\n", time_spent);
+		//printArray(data,num);
 	    fclose(file);
+	    
 	}
     return 0;
 }
