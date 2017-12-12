@@ -4,7 +4,7 @@
 #include <math.h>
 #include <omp.h>
 
-#define STOP_THRESH 20
+#define STOP_THRESH 1000
 //swap two elements
 void swap(int* a, int* b)
 {
@@ -114,16 +114,19 @@ int main(int argc, char *argv[]){
    	// read from an array
     FILE * file;
 	file = fopen(argv[1] , "r");
+	
+
 	if (file) {
+	    int *data;
 		int num;
 		double begin,end;
 		int ret = fscanf(file,"%d",&num);
-		int data[num];
-		int i;
+	    data = (int *)malloc(num * sizeof(int));
+	    long i;
 		for (i=0; i<num; ++i){
 			ret = fscanf(file,"%d",&data[i]);
 		}
-		printf("endi %d", i);
+		printf("endi %ld", i);
 		begin = omp_get_wtime();
 		qsort0(data,0,num-1);
 		end = omp_get_wtime();
@@ -132,18 +135,21 @@ int main(int argc, char *argv[]){
 		double time_spent = (double)(end - begin);
 		printf("\n%f\n", time_spent);
 	    fclose(file);
+	    free(data);
 	}
+	
 	file = fopen(argv[1] , "r");
 	if (file) {
+	    int *data;
 		int num;
 		double begin,end;
-	   	int ret = fscanf(file,"%d",&num);
-		int data[num];
-		int i;
+		int ret = fscanf(file,"%d",&num);
+	    data = (int *)malloc(num * sizeof(int));
+	    long i;
 		for (i=0; i<num; ++i){
 			ret = fscanf(file,"%d",&data[i]);
 		}
-		printf("endi %d", i);
+		printf("endi %ld", i);
 		begin = omp_get_wtime();
 		qsort1(data,0,num-1);
 		end = omp_get_wtime();
@@ -151,8 +157,8 @@ int main(int argc, char *argv[]){
 			printArray(data,num);
 		double time_spent = (double)(end - begin);
 		printf("\n%f\n", time_spent);
-	    fclose(file); 
+	    fclose(file);
+	    free(data);
 	}
-	
     return 0;
 }

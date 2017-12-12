@@ -13,7 +13,7 @@ void swap(int* a, int* b)
  
 //  all smaller to left of pivot
 //  all greater elements to right of pivot
-int partition (int arr[], int low, int high)
+int partition (int arr[], long low, long high)
 {
     int pivot = arr[high];    // pivot
     int i = (low - 1);  // Index of smaller element
