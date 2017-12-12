@@ -15,11 +15,11 @@ void swap(double* a, double* b)
  
 //  all smaller to left of pivot
 //  all greater elements to right of pivot
-int partition (double *arr, int low, int high)
+long partition (double *arr, long low, long high)
 {
-    int pivot = arr[high];    // pivot
-    int i = (low - 1);  // Index of smaller element
-    for (int j = low; j <= high- 1; j++)
+    long pivot = arr[high];    // pivot
+    long i = (low - 1);  // Index of smaller element
+    for (long j = low; j <= high- 1; j++)
     {
         // If current element is smaller than or
         // equal to pivot
@@ -33,15 +33,15 @@ int partition (double *arr, int low, int high)
     return (i + 1);
 }
 
-int partition1(double * a, int p, int r)
+long partition1(double *a, long p, long r)
 {
-    int lt[r-p];
-    int gt[r-p];
-    int i;
-    int j;
-    int key = a[r];
-    int lt_n = 0;
-    int gt_n = 0;
+    double lt[r-p];
+    double gt[r-p];
+    long i;
+    long j;
+    double key = a[r];
+    long lt_n = 0;
+    long gt_n = 0;
 
     #pragma omp parallel for
     for(i = p; i < r; i++){
@@ -67,13 +67,13 @@ int partition1(double * a, int p, int r)
 
  
 // The main function that implements QuickSort
-void qsort0(double *arr, int low, int high)
+void qsort0(double *arr, long low, long high)
 {
     if (low < high)
     {
         /* pi is partitioning index, arr[p] is now
            at right place */
-        int pi = partition(arr, low, high);
+        long pi = partition(arr, low, high);
  
         // Separately sort elements before
         // partition and after partition
@@ -83,18 +83,18 @@ void qsort0(double *arr, int low, int high)
 }
  
 
-void qsort1(double *arr, int low, int high)
+void qsort1(double *arr, long low, long high)
 {
     if (low < high){
         /* pi is partitioning index, arr[p] is now
            at right place */
         
         if (high - low<STOP_THRESH) {
-            int pi = partition(arr, low, high);
+            long pi = partition(arr, low, high);
             qsort0(arr, low, pi-1);
             qsort0(arr, pi+1, high);
         }else{
-            int pi = partition1(arr, low, high);
+            long pi = partition1(arr, low, high);
 			#pragma omp task
             qsort1(arr, low, pi - 1);
 			#pragma omp task
@@ -107,9 +107,9 @@ void qsort1(double *arr, int low, int high)
 
 
 /* Function to print an array */
-void printArray(double *arr, int size)
+void printArray(double *arr, long size)
 {
-    int i;
+    long i;
     for (i=0; i < size; i++)
         printf("%f ", arr[i]);
     printf("n");
@@ -160,7 +160,7 @@ int main(int argc, char *argv[]){
 		}
 		STOP_THRESH = 5000;
 		begin = omp_get_wtime();
-		#pragma omp parallel num_threads(8)
+		#pragma omp parallel num_threads(4)
 	    {	
 		    #pragma omp single nowait
 		    {
